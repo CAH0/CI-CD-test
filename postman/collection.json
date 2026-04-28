@@ -1,0 +1,236 @@
+{
+	"info": {
+		"_postman_id": "2dc79156-fe4e-4ca3-890b-762bd646538f",
+		"name": "TestApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "54261201",
+		"_collection_link": "https://kazakov-a-6044951.postman.co/workspace/NewWorkSPase~e573937e-2718-4011-ae5a-2a57bafbd5bb/collection/54261201-2dc79156-fe4e-4ca3-890b-762bd646538f?action=share&source=collection_link&creator=54261201"
+	},
+	"item": [
+		{
+			"name": "GetPostFirstId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has correct post structure\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var firstPost = jsonData[0];",
+							"",
+							"    pm.expect(firstPost).to.have.property(\"userId\", 1);",
+							"    pm.expect(firstPost).to.have.property(\"id\", 1);",
+							"    pm.expect(firstPost).to.have.property(\"title\");",
+							"    pm.expect(firstPost).to.have.property(\"body\");",
+							"});",
+							"",
+							"pm.test(\"Title is not empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var firstPost = jsonData[0];",
+							"",
+							"    pm.expect(firstPost.title.length).to.be.above(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/posts?id=1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"posts"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllPosts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Is array\", () => {",
+							"    const data = pm.response.json();",
+							"    pm.expect(data).to.be.an(\"array\");",
+							"    pm.expect(data.length).to.be.greaterThan(0);",
+							"});",
+							"",
+							"pm.test(\"first post have userId\", function(){",
+							"    const data = pm.response.json()[0];",
+							"    pm.expect(data).to.have.property(\"userId\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/posts",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateNewPost",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response has id\", function() {",
+							"    const data = pm.response.json();",
+							"    pm.expect(data).to.have.property(\"id\");",
+							"    pm.expect(data.title).to.equal(\"test\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"userId\": 11,\n        \"id\": 101,\n        \"title\": \"test\",\n        \"body\": \"test\"\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/posts",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RemoveData",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Post Update\", function () {",
+							"    const data = pm.response.json();",
+							"",
+							"    pm.expect(data.title).to.equal(\"foo\");",
+							"    pm.expect(data.body).to.equal(\"bar\");",
+							"    pm.expect(data).to.have.property(\"userId\", 123);",
+							"    pm.expect(data).to.have.property(\"id\",1);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"foo\",\n    \"body\": \"bar\",\n    \"userId\": 123\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/posts/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"posts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteFirstId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Respons is empty\", function(){",
+							"    pm.expect(pm.response.json()).to.be.empty;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/posts/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"posts",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
