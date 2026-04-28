@@ -41,10 +41,8 @@ jobs:
       
       - name: Run Postman tests
         run: |
-          newman run collection.json \
-            --environment postman-environment.json \
-            --reporters cli,json \
-            --reporter-json-export test-results.json
+          newman run postman/collection.json \
+            --environment postman-environment.json
       
       - name: Upload test results
         if: always()
