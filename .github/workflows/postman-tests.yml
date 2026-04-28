@@ -1,18 +1,19 @@
-name: CI
+name: Postman API Tests
 
 on:
   push:
-    branches: [ "master" ]      # У вас "master", у меня было "main"
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
 
 jobs:
-  postman-tests:                # Вместо "build"
+  test:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -22,5 +23,38 @@ jobs:
       - name: Install Newman
         run: npm install -g newman
       
+      - name: Create environment file
+        run: |
+          cat > postman-environment.json << 'EOF'
+          {
+            "id": "test-env",
+            "name": "Test Environment",
+            "values": [
+              {
+                "key": "url",
+                "value": "https://jsonplaceholder.typicode.com",
+                "enabled": true
+              }
+            ]
+          }
+          EOF
+      
       - name: Run Postman tests
-        run: newman run postman/collection.json
+        run: |
+          newman run collection.json \
+            --environment postman-environment.json \
+            --reporters cli,json \
+            --reporter-json-export test-results.json
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results.json
+      
+      - name: Check if tests passed
+        if: failure()
+        run: |
+          echo "❌ Tests failed!"
+          exit 1
